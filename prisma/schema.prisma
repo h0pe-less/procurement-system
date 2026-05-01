@@ -1,0 +1,37 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+}
+
+model Vendor {
+  id               String     @id
+  name             String     @db.Text
+  idno             String?    @unique @db.VarChar(13)
+  address          String?    @db.Text
+  email            String?    @db.VarChar(255)
+  phone            String?    @db.VarChar(100)
+  registrationDate DateTime?
+  rating           Decimal?   @db.Decimal(4, 2)
+  contracts        Contract[]
+
+  @@map("vendors")
+}
+
+model Contract {
+  id             String    @id
+  workOfferId    String    @map("work_offer_id") @db.VarChar(255)
+  workOfferTitle String?   @map("work_offer_title") @db.Text
+  vendorId       String    @map("vendor_id")
+  completedAt    DateTime? @map("completed_at")
+  totalValue     Decimal?  @map("total_value") @db.Decimal(15, 2)
+  currency       String?   @db.VarChar(10)
+  status         String?   @db.VarChar(50)
+  rating         Decimal?  @map("rating") @db.Decimal(5, 2)
+  vendor         Vendor    @relation(fields: [vendorId], references: [id])
+
+  @@index([vendorId], map: "contracts_vendor_id_fkey")
+  @@map("contracts")
+}
